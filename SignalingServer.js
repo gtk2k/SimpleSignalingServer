@@ -1,6 +1,6 @@
 import { WebSocketServer } from 'ws';
 const peers = {};
-const wss = new WebSocketServer();
+const wss = new WebSocketServer({port: 8989});
 let sender, receiver;
 wss.on('connection', (ws) => {
     console.log('on connection');
@@ -18,7 +18,7 @@ wss.on('connection', (ws) => {
             }
         }
         if (ws.peerType === 'receiver') {
-            sender.send(JSON.stringify(msg));
+            sender?.send(JSON.stringify(msg));
         }
         else {
             receiver?.send(JSON.stringify(msg));
