@@ -1,8 +1,6 @@
-import { connect } from 'http2';
-import {WebSocketServer} from 'ws';
-import {v4 as uuidv4} from 'uuid';
+import { WebSocketServer } from 'ws';
 const peers = {};
-const wss = new WebSocketServer({port:8989});
+const wss = new WebSocketServer();
 let sender, receiver;
 wss.on('connection', (ws) => {
     console.log('on connection');
@@ -10,26 +8,24 @@ wss.on('connection', (ws) => {
         console.log(data.toString());
         const msg = JSON.parse(data);
         console.log(msg.src, msg.peerType, msg.type);
-        if(msg.type === 'new'){
+        if (msg.type === 'new') {
             ws.peerType = msg.peerType;
-            if(msg.peerType === 'sender'){
+            if (msg.peerType === 'sender') {
                 sender = ws;
             }
-            else
-            {
+            else {
                 receiver = ws;
             }
         }
-        if(ws.peerType === 'receiver'){
+        if (ws.peerType === 'receiver') {
             sender.send(JSON.stringify(msg));
         }
-        else
-        {
+        else {
             receiver?.send(JSON.stringify(msg));
         }
     });
     ws.on('close', ws => {
-        if(peers[ws.peerId]){
+        if (peers[ws.peerId]) {
             delete peers[ws.peerId];
         }
     });
